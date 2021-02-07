@@ -62,7 +62,7 @@ def random_colors(N, bright=True):
     To get visually distinct colors, generate them in HSV space then
     convert to RGB.
     """
-    brightness = 1.0 if True else 0.7
+    brightness = 1.0 if bright else 0.7
     hsv = [(i / N, 1, brightness) for i in range(N)]
     colors = list(map(lambda c: colorsys.hsv_to_rgb(*c), hsv))
     random.shuffle(colors)
@@ -73,8 +73,8 @@ def apply_mask(image, mask, color, alpha=1):
     """Apply the given mask to the image.
     """
     for c in range(3):
-        image[:, :, c] = np.where(mask == 1, color[c] * 255,
-                                  #(1 - alpha) + alpha * color[c] * 255,
+        image[:, :, c] = np.where(mask == 1,
+                                  (1 - alpha) + alpha * color[c] * 255,
                                   image[:, :, c])
     return image
 
@@ -148,7 +148,12 @@ def display_instances(image, boxes, masks, class_ids, class_names,
         # Mask
         mask = masks[:, :, i]
         if show_mask:
-            masked_image = apply_mask(masked_image, mask, color)
+            if class_id == 1:
+            mask_image = apply_mask(masked_image,mask,[1,0,0],alpha=1)
+            if class_id == 2:
+            mask_image = apply_mask(masked_image,mask,[0,1,0],alpha=1)
+            if class_id == 3:
+            mask_image = apply_mask(masked_image,mask,[0,0,1],alpha=1)
 
         # Mask Polygon
         # Pad to ensure proper polygons for masks that touch image edges.
